@@ -19,3 +19,17 @@ jobs:
       shell: pwsh
       run: |
         Write-Output "Received dispatch from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
+
+    - name: Get Logs for Workflow
+      shell: pwsh
+      run: |
+        Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
+        $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
+        $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
+        $FailedLogs = foreach ($ID in $FailedJobIds)
+        {
+          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
+        }
+        $FailedLogs
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
