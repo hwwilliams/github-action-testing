@@ -27,10 +27,7 @@ jobs:
           gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
-        gh issue create --repo https://github.com/${{ inputs.repo_name }} `
-          --title "Workflow Failed - ${{ inputs.repo_name }}" `
-          --body $CleanFailedJobLogs `
-          --label bug
+        gh issue create -R https://github.com/${{ inputs.repo_name }} -t "Workflow Failed - ${{ inputs.repo_name }}" -b $CleanFailedJobLogs -l bug
 
         # echo "::set-output name=logs::$CleanFailedJobLogs"
         # echo 'FAILED_JOB_LOGS<<EOF' >> $GITHUB_ENV
