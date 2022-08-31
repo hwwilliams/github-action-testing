@@ -1,0 +1,13 @@
+name: receive-dispatch
+
+on:
+  repository_dispatch:
+
+jobs:
+  repo_dispatch:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Print Message
+      run: |
+        echo "hi"
