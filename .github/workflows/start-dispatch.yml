@@ -41,6 +41,6 @@ jobs:
 
     - name: Run GH CLI
       run: |
-        echo '{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}' | gh workflow -R https://github.com/${{ github.repository }} run receive-dispatch.yml --json
+        echo '{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}' | gh workflow -R https://github.com/${{ github.repository }} run receive-dispatch --json
       env:
         GH_TOKEN: ${{ github.token }}
