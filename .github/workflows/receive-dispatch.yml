@@ -26,22 +26,17 @@ jobs:
         {
           gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
+        $FailedJobLogPath = ".\FailedJob.logs"
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
-        # gh issue create --title "Workflow Failed - ${{ inputs.repo_name }}" --body $CleanFailedJobLogs
-
-        # echo "::set-output name=logs::$CleanFailedJobLogs"
-        # echo 'FAILED_JOB_LOGS<<EOF' >> $GITHUB_ENV
-        # $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' }) >> $GITHUB_ENV
-        # echo 'EOF' >> $GITHUB_ENV
-
-        echo "FOO=BAR" >> $GITHUB_ENV
+        $CleanFailedJobLogs | Out-File -Encoding unicode -FilePath $FailedJobLogPath -Force
+        Get-Content $FailedJobLogPath
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
-    - name: test step
-      run: |
-        ${{ env.FOO }}
-        $FOO
+    # - name: test step
+    #   run: |
+    #     ${{ env.FOO }}
+    #     $FOO
 
     # - name: Create Issue for Workflow
     #   uses: dacbd/create-issue-action@main
