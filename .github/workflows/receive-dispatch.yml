@@ -2,6 +2,13 @@ name: receive-dispatch
 
 on:
   workflow_dispatch:
+    inputs:
+      repo_name:
+        required: true
+        type: string
+      workflow_run_id:
+        required: true
+        type: string
 
 jobs:
   repo_dispatch:
