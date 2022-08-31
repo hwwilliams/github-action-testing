@@ -27,28 +27,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # - name: Get Log
+    # - name: Get Workflow Log using API
     #   run: |
     #     curl --request GET -H "Accept: application/vnd.github.v3+json" \
     #       --header 'authorization: Bearer ${{ github.token }}' --header 'content-type: application/json' \
     #       https://api.github.com/repos/${{ github.owner }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/log
 
-    # - name: Start Dispatch
+    # - name: Start Repo Dispatch using API
     #   run: |
     #     curl -X POST -H "Accept: application/vnd.github.v3+json" \
     #       -H 'Authorization: Bearer ${{ github.token }}' https://api.github.com/repos/${{ github.repository }}/dispatches \
     #       -d '{"event_type":"repository_dispatch"}'
 
-    - name:
+    - name: Start Workflow Dispatch using API
       run: |
         curl -X POST -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ github.token }}" \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_NAME }}/dispatches \
-          -d '{"ref":"main","inputs":{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}}'
+          -d '{"inputs":{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}}'
       env:
         WORKFLOW_NAME: receive-dispatch.yml
 
-    # - name: Run GH CLI
+    # - name: Start Workflow using GitHub CLI
     #   run: |
     #     echo '{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}' | gh workflow -R https://github.com/${{ github.repository }} run receive-dispatch --json
     #   env:
