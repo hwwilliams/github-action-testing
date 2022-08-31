@@ -1,7 +1,8 @@
 name: start-dispatch
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   task-1:
