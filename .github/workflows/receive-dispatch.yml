@@ -41,6 +41,8 @@ jobs:
       run: |
         ${{ env.FAILED_JOB_LOGS }}
         ${{ env.TEST_VAR }}
+        $FAILED_JOB_LOGS
+        $TEST_VAR
 
     - name: Create Issue for Workflow
       uses: dacbd/create-issue-action@main
@@ -58,3 +60,5 @@ jobs:
           ### Error
           ${{ env.FAILED_JOB_LOGS }}
           ${{ env.TEST_VAR }}
+          $FAILED_JOB_LOGS
+          $TEST_VAR
