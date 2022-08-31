@@ -15,11 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Print Message
-      shell: pwsh
-      run: |
-        Write-Output "Received dispatch from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
-
     - name: Get Logs for Workflow
       shell: pwsh
       id: workflow_logs
@@ -32,22 +27,22 @@ jobs:
           gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
         $FailedJobLogs | Out-File -FilePath .\FailedJob.logs -Encoding utf8
-        $CleanFailedJobLogs = Get-Content -Raw .\FailedJob.logs
+        Get-Content -Raw .\FailedJob.logs
         # $CleanFailedJobLogs = $FailedJobLogs.Split('`n')
-        echo "::set-output name=logs::$CleanFailedJobLogs"
+        # echo "::set-output name=logs::$CleanFailedJobLogs"
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
-    - name: Create Issue for Workflow
-      uses: dacbd/create-issue-action@main
-      with:
-        token: ${{ github.token }}
-        repo: ${{ github.context.repo.repo }}
-        labels: bug
-        title: Workflow Failed - ${{ inputs.repo_name }}
-        body: |
-          ### Context
-          Repo: https://github.com/${{ inputs.repo_name }}
-          Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}
-          Workflow name: ${{ github.workflow }}
-          Error: ${{ steps.workflow_logs.outputs.logs }}
+    # - name: Create Issue for Workflow
+    #   uses: dacbd/create-issue-action@main
+    #   with:
+    #     token: ${{ github.token }}
+    #     repo: ${{ github.context.repo.repo }}
+    #     labels: bug
+    #     title: Workflow Failed - ${{ inputs.repo_name }}
+    #     body: |
+    #       ### Context
+    #       Repo: https://github.com/${{ inputs.repo_name }}
+    #       Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}
+    #       Workflow name: ${{ github.workflow }}
+    #       Error: ${{ steps.workflow_logs.outputs.logs }}
