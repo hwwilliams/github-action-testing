@@ -22,14 +22,11 @@ jobs:
         Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
         $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
         $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
-        $FailedJobLogPath = ".\FailedJob.logs"
-        foreach ($ID in $FailedJobIds)
+        $FailedJobLogs = foreach ($ID in $FailedJobIds)
         {
-          (gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed).Split('`n') | Out-String | Out-File -Append -Encoding utf8 -FilePath $FailedJobLogPath
+          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
-        $CleanFailedJobLogs = Get-Content $FailedJobLogPath
-        # $CleanFailedJobLogs = $FailedJobLogs.Split('`n')
-        echo "::set-output name=logs::$CleanFailedJobLogs"
+        echo "::set-output name=logs::$FailedJobLogs"
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
@@ -47,4 +44,6 @@ jobs:
           Workflow name: ${{ github.workflow }}
 
           ### Error
+          ```pwsh
           ${{ steps.workflow_logs.outputs.logs }}
+          ```
