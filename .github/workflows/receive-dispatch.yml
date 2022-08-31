@@ -26,7 +26,7 @@ jobs:
         {
           gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
-        $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
+        $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' }) | Out-String
         echo "::set-output name=logs::$CleanFailedJobLogs"
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
