@@ -31,8 +31,8 @@ jobs:
         {
           gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
-        Write-Out "Failed log count $($FailedLogs.Count)"
-        Write-Out "Failed log string count $(($FailedLogs | Out-String).Count)"
+        Write-Output "Failed log count $($FailedLogs.Count)"
+        Write-Output "Failed log string count $(($FailedLogs | Out-String).Count)"
         $CleanFailedLogs = $FailedLogs | Out-String
         echo "::set-output name=logs::$FailedLogs"
       env:
