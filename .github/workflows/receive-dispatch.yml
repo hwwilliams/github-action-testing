@@ -25,7 +25,7 @@ jobs:
         $FailedJobLogPath = ".\FailedJob.logs"
         foreach ($ID in $FailedJobIds)
         {
-          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed | Out-File -Append -Encoding utf8 -FilePath $FailedJobLogPath
+          (gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed).Split('`n').ToString() | Out-File -Append -Encoding utf8 -FilePath $FailedJobLogPath
         }
         $CleanFailedJobLogs = Get-Content $FailedJobLogPath
         # $CleanFailedJobLogs = $FailedJobLogs.Split('`n')
