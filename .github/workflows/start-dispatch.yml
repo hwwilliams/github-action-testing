@@ -33,14 +33,14 @@ jobs:
     #       --header 'authorization: Bearer ${{ github.token }}' --header 'content-type: application/json' \
     #       https://api.github.com/repos/${{ github.owner }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/log
 
-    - name: Start Dispatch
-      run: |
-        curl -X POST -H "Accept: application/vnd.github.v3+json" \
-          -H 'Authorization: Bearer ${{ github.token }}' https://api.github.com/repos/${{ github.repository }}/dispatches \
-          -d '{"event_type":"repository_dispatch"}'
-
-    # - name: Run GH CLI
+    # - name: Start Dispatch
     #   run: |
-    #     echo '{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}' | gh workflow -R https://github.com/${{ github.repository }} run receive-dispatch.yml --json
-    #   env:
-    #     GH_TOKEN: ${{ github.token }}
+    #     curl -X POST -H "Accept: application/vnd.github.v3+json" \
+    #       -H 'Authorization: Bearer ${{ github.token }}' https://api.github.com/repos/${{ github.repository }}/dispatches \
+    #       -d '{"event_type":"repository_dispatch"}'
+
+    - name: Run GH CLI
+      run: |
+        echo '{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}' | gh workflow -R https://github.com/${{ github.repository }} run receive-dispatch.yml --json
+      env:
+        GH_TOKEN: ${{ github.token }}
