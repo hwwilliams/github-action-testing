@@ -48,4 +48,4 @@ jobs:
           Workflow name: ${{ github.workflow }}
 
           ### Error
-          $FailedJobLogs
+          $Env:FailedJobLogs
