@@ -16,5 +16,6 @@ jobs:
 
     steps:
     - name: Print Message
+      shell: pwsh
       run: |
-        echo "hi"
+        Write-Output "Received dispatch from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
