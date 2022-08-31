@@ -33,12 +33,14 @@ jobs:
         echo 'FAILED_JOB_LOGS<<EOF' >> $GITHUB_ENV
         $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' }) >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
+        echo "TEST_VAR=testing123" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
     - name: test step
       run: |
         ${{ env.FAILED_JOB_LOGS }}
+        ${{ env.TEST_VAR }}
 
     - name: Create Issue for Workflow
       uses: dacbd/create-issue-action@main
@@ -55,3 +57,4 @@ jobs:
 
           ### Error
           ${{ env.FAILED_JOB_LOGS }}
+          ${{ env.TEST_VAR }}
