@@ -26,9 +26,11 @@ jobs:
         {
           gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
-        $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
-        $CleanFailedJobLogsString = $CleanFailedJobLogs | Out-String
-        echo "::set-output name=logs::$CleanFailedJobLogsString"
+        $CleanFailedJobLogs = ($FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' }) | Out-String).Trim()
+        # echo "::set-output name=logs::$CleanFailedJobLogs"
+        echo 'FailedJobLogs<<EOF' >> $GITHUB_ENV
+        $CleanFailedJobLogs >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
@@ -46,4 +48,4 @@ jobs:
           Workflow name: ${{ github.workflow }}
 
           ### Error
-          ${{ steps.workflow_logs.outputs.logs }}
+          $FailedJobLogs
