@@ -22,11 +22,10 @@ jobs:
         Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
         $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
         $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
-        # foreach ($ID in $FailedJobIds)
-        # {
-        #   gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed | Tee-Object -Append -FilePath .\FailedJob.logs
-        # }
-        # Get-Content .\FailedJob.logs | Out-File -FilePath .\FailedJob.logs -Encoding utf8 -Force
+        foreach ($ID in $FailedJobIds)
+        {
+          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed | Out-File -Append -Encoding utf8 -FilePath .\FailedJob.logs
+        }
         # $CleanFailedJobLogs = Get-Content .\FailedJob.logs
         # $CleanFailedJobLogs = $FailedJobLogs.Split('`n')
         # echo "::set-output name=logs::$CleanFailedJobLogs"
