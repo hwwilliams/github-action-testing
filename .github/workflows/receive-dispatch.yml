@@ -29,9 +29,11 @@ jobs:
         $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
         $FailedLogs = foreach ($ID in $FailedJobIds)
         {
-          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed | Out-String
+          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
         }
-        $FailedLogs
+        Write-Out "Failed log count $($FailedLogs.Count)"
+        Write-Out "Failed log string count $(($FailedLogs | Out-String).Count)"
+        $CleanFailedLogs = $FailedLogs | Out-String
         echo "::set-output name=logs::$FailedLogs"
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
@@ -48,5 +50,4 @@ jobs:
           Repo: https://github.com/${{ inputs.repo_name }}
           Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}
           Workflow name: ${{ github.workflow }}
-          Error:
-          ${{ steps.workflow_logs.outputs.logs }}
+          Error: ${{ steps.workflow_logs.outputs.logs }}
