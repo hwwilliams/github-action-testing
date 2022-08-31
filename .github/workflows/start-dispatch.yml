@@ -8,9 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Something That Might Fail
-      run: exit 1
-      # run: echo "running task 1"
+    - name: Something That Will Fail
+      shell: pwsh
+      run: |
+        Write-Output "Attempting to create the same directory twice"
+        New-Item -Path ./testing -ItemType Directory
+        New-Item -Path ./testing -ItemType Directory
 
   task-2:
     needs: [task-1]
