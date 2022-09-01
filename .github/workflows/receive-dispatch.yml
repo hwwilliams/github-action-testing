@@ -19,15 +19,23 @@ jobs:
       shell: pwsh
       run: |
         Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
+
+        # Get all jobs from workflow run
         $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
-        $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
-        $FailedJobLogs = foreach ($ID in $FailedJobIds)
-        {
-          gh run -R https://github.com/${{ inputs.repo_name }} view `
-            -j $ID --log-failed
-        }
+
+        # Filter for failed jobs within workflow run
+        $FailedJobDetails = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") })
+
+        # Regex match failed job ID
+        $FailedJobIds = $FailedJobDetails.ForEach({ [Regex]::Match($PSItem, '\(ID\s([0-9]+)\)').Groups[1].Value })
+
+        # Get failed job workflow logs
+        $FailedJobLogs = $FailedJobIds.ForEach({ gh run -R https://github.com/${{ inputs.repo_name }} view -j $PSItem --log-failed })
+
         # Remove ANSI color codes from output
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
+
+        # Build GitHub issue body content
         $IssueBodyContent = @()
         $IssueBodyContent += '### Context'
         $IssueBodyContent += 'Repository: https://github.com/${{ inputs.repo_name }}'
