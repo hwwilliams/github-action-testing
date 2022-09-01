@@ -12,8 +12,8 @@ jobs:
     - name: Step 1
       run: |
         echo "Attempting to create directory"
-        mkdir ./testing
-        mkdir -Path ./testing
+        mkdir .\testing
+        mkdir .\testing
 
   job-2:
     needs: [job-1]
