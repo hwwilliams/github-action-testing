@@ -49,7 +49,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
-    - name: Create Issue
+    - name: Create Failed Workflow Issue
       shell: pwsh
       run: |
         $IssueBodyContent = (Resolve-Path ".\IssueBodyContent.txt").Path

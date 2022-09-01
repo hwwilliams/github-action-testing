@@ -5,45 +5,32 @@ on:
     branches: [main]
 
 jobs:
-  task-1:
+  job-1:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Something That Will Fail
+    - name: Step 1
       shell: pwsh
       run: |
-        Write-Output "Attempting to create the same directory twice"
+        Write-Output "Attempting to create directory"
         New-Item -Path ./testing -ItemType Directory
         New-Item -Path ./testing -ItemType Directory
 
-  task-2:
-    needs: [task-1]
+  job-2:
+    needs: [job-1]
     runs-on: ubuntu-latest
 
     steps:
-    - name: Something That Might Fail
-      # run: exit 1
+    - name: Step 2
       run: echo "running task 2"
 
-  create-failure-issue:
+  create-issue-on-failure:
     if: ${{ failure() }}
-    needs: [task-2]
+    needs: [job-2]
     runs-on: ubuntu-latest
 
     steps:
-    # - name: Get Workflow Log using API
-    #   run: |
-    #     curl --request GET -H "Accept: application/vnd.github.v3+json" \
-    #       --header 'authorization: Bearer ${{ secrets.GH_TOKEN_PAT }}' --header 'content-type: application/json' \
-    #       https://api.github.com/repos/${{ github.owner }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/log
-
-    # - name: Start Repo Dispatch using API
-    #   run: |
-    #     curl -X POST -H "Accept: application/vnd.github.v3+json" \
-    #       -H 'Authorization: Bearer ${{ secrets.GH_TOKEN_PAT }}' https://api.github.com/repos/${{ github.repository }}/dispatches \
-    #       -d '{"event_type":"repository_dispatch"}'
-
-    - name: Start Workflow Dispatch using API ### WORKS with GitHub PAT
+    - name: Call Failed Workflow Issue Creation Workflow
       run: |
         curl -X POST -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.GH_TOKEN_PAT }}" \
@@ -51,9 +38,3 @@ jobs:
           -d '{"ref":"main","inputs":{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}}'
       env:
         WORKFLOW_NAME: receive-dispatch.yml
-
-    # - name: Start Workflow using GitHub CLI
-    #   run: |
-    #     echo '{"repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}' | gh workflow -R https://github.com/${{ github.repository }} run receive-dispatch --json
-    #   env:
-    #     GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
