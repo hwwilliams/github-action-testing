@@ -31,7 +31,7 @@ jobs:
         $FailedJobIds = $RunDetails.ForEach({ [Regex]::Match($PSItem, '^X.+\(ID\s([0-9]+)\)') }).Where({ $PSItem.Success }).Groups.Where({ $PSItem.Name -eq 1 }).Value
 
         # Get failed job workflow logs
-        $FailedJobLogs = $FailedJobIds.ForEach({ gh run -R https://github.com/${{ inputs.workflow_repo_name }} view -j $PSItem --log-failed })
+        $FailedJobLogs = $FailedJobIds.ForEach({ gh run -R https://github.com/${{ inputs.workflow_repo_name }} view -j $PSItem --log-failed }) | Sort-Object
 
         # Remove ANSI color codes from output
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
