@@ -43,6 +43,9 @@ jobs:
       shell: pwsh
       run: |
         $IssueBodyContent = (Resolve-Path ".\IssueBodyContent.txt").Path
-        gh issue create -R "https://github.com/${{ inputs.repo_name }}" -t "Workflow Failed - ${{ inputs.repo_name }}" -F $IssueBodyContent -l bug
+        gh issue create `
+          -R "https://github.com/${{ inputs.repo_name }}" `
+          -t "Workflow Failed - ${{ inputs.repo_name }}" `
+          -F $IssueBodyContent -l bug
       env:
         GH_TOKEN: ${{ github.token }}
