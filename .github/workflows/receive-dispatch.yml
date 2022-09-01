@@ -17,7 +17,6 @@ jobs:
     steps:
     - name: Get Logs for Workflow
       shell: pwsh
-      id: workflow_logs
       run: |
         Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
         $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
@@ -29,14 +28,15 @@ jobs:
         $FailedJobLogPath = ".\FailedJob.logs"
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
         $CleanFailedJobLogs | Out-File -Encoding unicode -FilePath $FailedJobLogPath -Force
-        Get-Content $FailedJobLogPath
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
-    # - name: test step
-    #   run: |
-    #     ${{ env.FOO }}
-    #     $FOO
+    - name: Create Issue
+      shell: pwsh
+      run: |
+        $FailedJobLogPath = ".\FailedJob.logs"
+        $CleanFailedJobLogs = Get-Content $FailedJobLogPath
+        gh issue create -R https://github.com/${{ inputs.repo_name }} --title "Workflow Failed - ${{ inputs.repo_name }}" --body "$CleanFailedJobLogs" --label bug
 
     # - name: Create Issue for Workflow
     #   uses: dacbd/create-issue-action@main
