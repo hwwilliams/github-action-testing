@@ -1,9 +1,12 @@
 name: receive-dispatch
 
+env:
+  issue_creation_repo_name: undefined
+
 on:
   workflow_dispatch:
     inputs:
-      repo_name:
+      workflow_repo_name:
         required: true
         type: string
       workflow_run_id:
@@ -18,16 +21,16 @@ jobs:
     - name: Get Failed Workflow Details and Logs
       shell: pwsh
       run: |
-        Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
+        Write-Output "Getting workflow logs from repo '${{ inputs.workflow_repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
 
         # Get all jobs from workflow run
-        $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
+        $RunDetails = gh run -R https://github.com/${{ inputs.workflow_repo_name }} view ${{ inputs.workflow_run_id }}
 
         # Regex match failed job IDs
         $FailedJobIds = $RunDetails.ForEach({ [Regex]::Match($PSItem, '^X.+\(ID\s([0-9]+)\)') }).Where({ $PSItem.Success }).Groups[1].Value
 
         # Get failed job workflow logs
-        $FailedJobLogs = $FailedJobIds.ForEach({ gh run -R https://github.com/${{ inputs.repo_name }} view -j $PSItem --log-failed })
+        $FailedJobLogs = $FailedJobIds.ForEach({ gh run -R https://github.com/${{ inputs.workflow_repo_name }} view -j $PSItem --log-failed })
 
         # Remove ANSI color codes from output
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
@@ -35,8 +38,8 @@ jobs:
         # Build GitHub issue body content
         $IssueBodyContent = @()
         $IssueBodyContent += '### Context'
-        $IssueBodyContent += 'Repository: https://github.com/${{ inputs.repo_name }}'
-        $IssueBodyContent += 'Failed Workflow Run: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
+        $IssueBodyContent += 'Repository: https://github.com/${{ inputs.workflow_repo_name }}'
+        $IssueBodyContent += 'Failed Workflow Run: https://github.com/${{ inputs.workflow_repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
         $IssueBodyContent += 'Failed Workflow name: ${{ github.workflow }}'
         $IssueBodyContent += ''
         $IssueBodyContent += '### Error'
@@ -52,8 +55,8 @@ jobs:
       shell: pwsh
       run: |
         $IssueBodyContentPath = (Resolve-Path ".\IssueBodyContent.txt").Path
-        gh issue create -R "https://github.com/${{ inputs.repo_name }}" `
-          -t "Workflow Failed - ${{ inputs.repo_name }}" `
+        gh issue create -R "https://github.com/${{ inputs.workflow_repo_name }}" `
+          -t "Workflow Failed - ${{ inputs.workflow_repo_name }}" `
           -F $IssueBodyContentPath -l bug
       env:
         GH_TOKEN: ${{ github.token }}
