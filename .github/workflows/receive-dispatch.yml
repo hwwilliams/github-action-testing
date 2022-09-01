@@ -21,13 +21,18 @@ jobs:
         Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
         $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
         $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
-        $FailedJobLogs = foreach ($ID in $FailedJobIds)
-        {
-          gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed
-        }
-        $FailedJobLogPath = ".\FailedJob.logs"
+        $FailedJobLogs = foreach ($ID in $FailedJobIds) { gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed }
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
-        ($CleanFailedJobLogs | Out-String).Trim() | Out-File -FilePath $FailedJobLogPath -Force
+        $FailedJobLogPath = ".\FailedJob.logs"
+        "### Context" | Out-File -FilePath $FailedJobLogPath -Force
+        "Repo: https://github.com/${{ inputs.repo_name }}" | Out-File -FilePath $FailedJobLogPath -Append
+        "Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}" | Out-File -FilePath $FailedJobLogPath -Append
+        "Workflow name: ${{ github.workflow }}" | Out-File -FilePath $FailedJobLogPath -Append
+        "" | Out-File -FilePath $FailedJobLogPath -Append
+        "### Error" | Out-File -FilePath $FailedJobLogPath -Append
+        "```txt" | Out-File -FilePath $FailedJobLogPath -Append
+        $CleanFailedJobLogs | Out-File -FilePath $FailedJobLogPath -Append
+        "```" | Out-File -FilePath $FailedJobLogPath -Append
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
@@ -53,7 +58,3 @@ jobs:
     #       Workflow name: ${{ github.workflow }}
 
     #       ### Error
-    #       ${{ env.FAILED_JOB_LOGS }}
-    #       ${{ env.TEST_VAR }}
-    #       $FAILED_JOB_LOGS
-    #       $TEST_VAR
