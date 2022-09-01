@@ -25,7 +25,7 @@ jobs:
       run: echo "running task 2"
 
   create-issue-on-failure:
-    if: ${{ failure() }}
+    if: ${{ github.event_name == 'push' && failure() }}
     needs: [job-2]
     runs-on: ubuntu-latest
 
