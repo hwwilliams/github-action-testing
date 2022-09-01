@@ -24,15 +24,15 @@ jobs:
         $FailedJobLogs = foreach ($ID in $FailedJobIds) { gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed }
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
         $FailedJobLogPath = ".\FailedJob.logs"
-        "### Context" | Out-File -FilePath $FailedJobLogPath -Force
-        "Repo: https://github.com/${{ inputs.repo_name }}" | Out-File -FilePath $FailedJobLogPath -Append
-        "Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}" | Out-File -FilePath $FailedJobLogPath -Append
-        "Workflow name: ${{ github.workflow }}" | Out-File -FilePath $FailedJobLogPath -Append
-        "" | Out-File -FilePath $FailedJobLogPath -Append
-        "### Error" | Out-File -FilePath $FailedJobLogPath -Append
-        "```txt" | Out-File -FilePath $FailedJobLogPath -Append
+        '### Context' | Out-File -FilePath $FailedJobLogPath -Force
+        'Repo: https://github.com/${{ inputs.repo_name }}' | Out-File -FilePath $FailedJobLogPath -Append
+        'Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}' | Out-File -FilePath $FailedJobLogPath -Append
+        'Workflow name: ${{ github.workflow }}' | Out-File -FilePath $FailedJobLogPath -Append
+        '' | Out-File -FilePath $FailedJobLogPath -Append
+        '### Error' | Out-File -FilePath $FailedJobLogPath -Append
+        '```txt' | Out-File -FilePath $FailedJobLogPath -Append
         $CleanFailedJobLogs | Out-File -FilePath $FailedJobLogPath -Append
-        "```" | Out-File -FilePath $FailedJobLogPath -Append
+        '```' | Out-File -FilePath $FailedJobLogPath -Append
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
