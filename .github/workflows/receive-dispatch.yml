@@ -33,16 +33,26 @@ jobs:
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
 
         # Build GitHub issue body content
-        $IssueBodyContent = @()
-        $IssueBodyContent += '### Context'
-        $IssueBodyContent += 'Repository: https://github.com/${{ inputs.repo_name }}'
-        $IssueBodyContent += 'Failed Workflow Run: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
-        $IssueBodyContent += 'Failed Workflow name: ${{ github.workflow }}'
-        $IssueBodyContent += ''
-        $IssueBodyContent += '### Error'
-        $IssueBodyContent += '```txt'
-        $IssueBodyContent += $CleanFailedJobLogs
-        $IssueBodyContent += '```'
+        $IssueBodyContent = {
+          ### Context
+          Repository: https://github.com/${{ inputs.repo_name }}
+          Failed Workflow Run: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}
+          Failed Workflow name: ${{ github.workflow }}
+
+          ### Error
+          ```txt
+          $CleanFailedJobLogs
+          ```
+        }
+        # $IssueBodyContent += '### Context'
+        # $IssueBodyContent += 'Repository: https://github.com/${{ inputs.repo_name }}'
+        # $IssueBodyContent += 'Failed Workflow Run: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
+        # $IssueBodyContent += 'Failed Workflow name: ${{ github.workflow }}'
+        # $IssueBodyContent += ''
+        # $IssueBodyContent += '### Error'
+        # $IssueBodyContent += '```txt'
+        # $IssueBodyContent += $CleanFailedJobLogs
+        # $IssueBodyContent += '```'
         $IssueBodyContentPath = ".\IssueBodyContent.txt"
         $IssueBodyContent | Out-File -FilePath $IssueBodyContentPath -Force
       env:
