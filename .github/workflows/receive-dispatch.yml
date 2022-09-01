@@ -28,7 +28,7 @@ jobs:
         $RunDetails = gh run -R https://github.com/${{ inputs.workflow_repo_name }} view ${{ inputs.workflow_run_id }}
 
         # Regex match failed job IDs
-        $FailedJobIds = $RunDetails.ForEach({ [Regex]::Match($PSItem, '^X.+\(ID\s([0-9]+)\)') }).Where({ $PSItem.Success }).Groups[1].Value
+        $FailedJobIds = $RunDetails.ForEach({ [Regex]::Match($PSItem, '^X.+\(ID\s([0-9]+)\)') }).Where({ $PSItem.Success }).Groups.Where({ $PSItem.Name -eq 1 }).Value
 
         # Get failed job workflow logs
         $FailedJobLogs = $FailedJobIds.ForEach({ gh run -R https://github.com/${{ inputs.workflow_repo_name }} view -j $PSItem --log-failed })
