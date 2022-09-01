@@ -34,7 +34,7 @@ jobs:
     - name: Create Issue
       shell: pwsh
       run: |
-        $FailedJobLogPath = ".\FailedJob.logs"
+        $FailedJobLogPath = (Resolve-Path ".\FailedJob.logs").Path
         gh issue create -R "https://github.com/${{ inputs.repo_name }}" --title "Workflow Failed - ${{ inputs.repo_name }}" --body-file $FailedJobLogPath
       env:
         GH_TOKEN: ${{ github.token }}
