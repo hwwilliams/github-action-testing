@@ -10,11 +10,10 @@ jobs:
 
     steps:
     - name: Step 1
-      shell: pwsh
       run: |
-        Write-Output "Attempting to create directory"
-        New-Item -Path ./testing -ItemType Directory
-        New-Item -Path ./testing -ItemType Directory
+        echo "Attempting to create directory"
+        mkdir ./testing
+        mkdir -Path ./testing
 
   job-2:
     needs: [job-1]
