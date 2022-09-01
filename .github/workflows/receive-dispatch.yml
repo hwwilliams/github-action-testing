@@ -37,6 +37,8 @@ jobs:
         $FailedJobLogPath = ".\FailedJob.logs"
         $CleanFailedJobLogs = Get-Content $FailedJobLogPath
         gh issue create -R "https://github.com/${{ inputs.repo_name }}" --title "Workflow Failed" --body "testing"
+      env:
+        GH_TOKEN: ${{ github.token }}
 
     # - name: Create Issue for Workflow
     #   uses: dacbd/create-issue-action@main
