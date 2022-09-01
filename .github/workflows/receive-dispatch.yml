@@ -21,31 +21,34 @@ jobs:
         Write-Output "Getting workflow logs from repo '${{ inputs.repo_name }}' and workflow with ID '${{ inputs.workflow_run_id }}'."
         $RunDetails = gh run -R https://github.com/${{ inputs.repo_name }} view ${{ inputs.workflow_run_id }}
         $FailedJobIds = $RunDetails.Where({ ($PSItem.StartsWith("X")) -and ($PSItem -ilike "*ID *") }).Split('(')[-1].Split(')')[0].Split('ID')[-1].Trim()
-        $FailedJobLogs = foreach ($ID in $FailedJobIds) { gh run -R https://github.com/${{ inputs.repo_name }} view --job $ID --log-failed }
+        $FailedJobLogs = foreach ($ID in $FailedJobIds)
+        {
+          gh run -R https://github.com/${{ inputs.repo_name }} view `
+            -j $ID --log-failed
+        }
+        # Remove ANSI color codes from output
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
-        $IssueBodyContent = ".\IssueBodyContent.txt"
-
-        $BodyContent = @()
-        $BodyContent += '### Context'
-        $BodyContent += 'Repo: https://github.com/${{ inputs.repo_name }}'
-        $BodyContent += 'Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
-        $BodyContent += 'Workflow name: ${{ github.workflow }}'
-        $BodyContent += ''
-        $BodyContent += '### Error'
-        $BodyContent += '```txt'
-        $BodyContent += $CleanFailedJobLogs
-        $BodyContent += '```'
-        $BodyContent | Out-File -FilePath $IssueBodyContent -Force
+        $IssueBodyContent = @()
+        $IssueBodyContent += '### Context'
+        $IssueBodyContent += 'Repository: https://github.com/${{ inputs.repo_name }}'
+        $IssueBodyContent += 'Failed Workflow Run: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
+        $IssueBodyContent += 'Failed Workflow name: ${{ github.workflow }}'
+        $IssueBodyContent += ''
+        $IssueBodyContent += '### Error'
+        $IssueBodyContent += '```txt'
+        $IssueBodyContent += $CleanFailedJobLogs
+        $IssueBodyContent += '```'
+        $IssueBodyContentPath = ".\IssueBodyContent.txt"
+        $IssueBodyContent | Out-File -FilePath $IssueBodyContentPath -Force
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
     - name: Create Failed Workflow Issue
       shell: pwsh
       run: |
-        $IssueBodyContent = (Resolve-Path ".\IssueBodyContent.txt").Path
-        gh issue create `
-          -R "https://github.com/${{ inputs.repo_name }}" `
+        $IssueBodyContentPath = (Resolve-Path ".\IssueBodyContent.txt").Path
+        gh issue create -R "https://github.com/${{ inputs.repo_name }}" `
           -t "Workflow Failed - ${{ inputs.repo_name }}" `
-          -F $IssueBodyContent -l bug
+          -F $IssueBodyContentPath -l bug
       env:
         GH_TOKEN: ${{ github.token }}
