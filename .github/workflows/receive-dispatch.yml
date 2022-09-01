@@ -27,7 +27,7 @@ jobs:
         }
         $FailedJobLogPath = ".\FailedJob.logs"
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
-        ($CleanFailedJobLogs | Out-String).Trim() | Out-File -Encoding unicode -FilePath $FailedJobLogPath -Force
+        ($CleanFailedJobLogs | Out-String).Trim() | Out-File -FilePath $FailedJobLogPath -Force
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
 
