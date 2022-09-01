@@ -25,16 +25,6 @@ jobs:
         $CleanFailedJobLogs = $FailedJobLogs.ForEach({ $PSItem -replace '\x1b\[[0-9;]*m','' })
         $IssueBodyContent = ".\IssueBodyContent.txt"
 
-        # '### Context' | Out-File -FilePath $IssueBodyContent -Force
-        # 'Repo: https://github.com/${{ inputs.repo_name }}' | Out-File -FilePath $IssueBodyContent -Append
-        # 'Failed Workflow: https://github.com/${{ inputs.repo_name }}/actions/runs/${{ inputs.workflow_run_id }}' | Out-File -FilePath $IssueBodyContent -Append
-        # 'Workflow name: ${{ github.workflow }}' | Out-File -FilePath $IssueBodyContent -Append
-        # '' | Out-File -FilePath $IssueBodyContent -Append
-        # '### Error' | Out-File -FilePath $IssueBodyContent -Append
-        # '```txt' | Out-File -FilePath $IssueBodyContent -Append
-        # $CleanFailedJobLogs | Out-File -FilePath $IssueBodyContent -Append
-        # '```' | Out-File -FilePath $IssueBodyContent -Append
-
         $BodyContent = @()
         $BodyContent += '### Context'
         $BodyContent += 'Repo: https://github.com/${{ inputs.repo_name }}'
@@ -53,6 +43,6 @@ jobs:
       shell: pwsh
       run: |
         $IssueBodyContent = (Resolve-Path ".\IssueBodyContent.txt").Path
-        gh issue create -R "https://github.com/${{ inputs.repo_name }}" --title "Workflow Failed - ${{ inputs.repo_name }}" --body-file $IssueBodyContent
+        gh issue create -R "https://github.com/${{ inputs.repo_name }}" -t "Workflow Failed - ${{ inputs.repo_name }}" -F $IssueBodyContent -l bug
       env:
         GH_TOKEN: ${{ github.token }}
