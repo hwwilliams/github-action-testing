@@ -39,8 +39,8 @@ jobs:
         $IssueBodyContent = @()
         $IssueBodyContent += '### Context'
         $IssueBodyContent += 'Repository: https://github.com/${{ inputs.workflow_repo_name }}'
+        $IssueBodyContent += 'Failed Workflow Name: ${{ github.workflow }}'
         $IssueBodyContent += 'Failed Workflow Run: https://github.com/${{ inputs.workflow_repo_name }}/actions/runs/${{ inputs.workflow_run_id }}'
-        $IssueBodyContent += 'Failed Workflow name: ${{ github.workflow }}'
         $IssueBodyContent += ''
         $IssueBodyContent += '### Error'
         $IssueBodyContent += '```txt'
