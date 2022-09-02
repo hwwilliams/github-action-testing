@@ -1,5 +1,8 @@
 name: start-dispatch
 
+env:
+  ISSUE_CREATION_REPO_NAME: hwwilliams/github-action-issues
+
 on:
   push:
     branches: [main]
@@ -37,6 +40,6 @@ jobs:
       uses: benc-uk/workflow-dispatch@v1
       with:
         token: ${{ secrets.GH_TOKEN_PAT }}
-        repo: ${{ github.repository }}
+        repo: ${{ env.ISSUE_CREATION_REPO_NAME }}
         workflow: receive-dispatch
-        inputs: '{"workflow_repo_name":"${{ github.repository }}","workflow_run_id":"${{ github.run_id }}"}'
+        inputs: '{"FAILED_WORKFLOW_REPO_NAME":"${{ github.repository }}","FAILED_WORKFLOW_RUN_ID":"${{ github.run_id }}"}'
