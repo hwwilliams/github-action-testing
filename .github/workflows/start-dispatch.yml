@@ -1,7 +1,7 @@
 name: start-dispatch
 
 env:
-  ISSUE_CREATION_REPO_NAME: hwwilliams/github-action-issues
+  ISSUE_CREATION_REPO_NAME: hwwilliams/github-workflow-failure-issue-creation
 
 on:
   push:
