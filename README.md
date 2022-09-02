@@ -1,5 +1,7 @@
 # Github Workflow Failure Dispatch
 
-This repo is for testing the creation of a GitHub issue for failed workflows. The GitHub issue will contain context about the workflow and the error message from the workflow logs.
+This repo contains a workflow which sends a dispatch request to a secondary workflow when workflow jobs have failed. This secondary workflow creates a GitHub issue with context about the failed workflow.
+
+This process currently requires a secondary workflow to be triggered because you cannot retrieve workflow logs from a currently running workflow.
 
 The issues are created in a separate repo at https://github.com/hwwilliams/github-workflow-failure-issue-creation
