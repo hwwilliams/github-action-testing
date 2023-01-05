@@ -29,7 +29,6 @@ jobs:
         Write-Output "Attempting to create directory"
         New-Item -Path ./testing -ItemType Directory
         New-Item -Path ./testing -ItemType Directory
-        New-Item -Path ./testing -ItemType Directory
 
   create-issue-on-failure:
     if: ${{ github.event_name == 'push' && failure() }}
