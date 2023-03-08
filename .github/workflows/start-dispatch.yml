@@ -8,9 +8,8 @@ on:
     branches: [main]
 
 jobs:
-  job-1:
+  job1:
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
     - name: Step 1
@@ -19,7 +18,8 @@ jobs:
         mkdir .\testing
         mkdir .\testing
 
-  job-2:
+  job2:
+    needs: [job1]
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +32,7 @@ jobs:
 
   create-issue-on-failure:
     if: ${{ github.event_name == 'push' && failure() }}
-    needs: [job-1, job-2]
+    needs: [job1, job2]
     runs-on: ubuntu-latest
 
     steps:
