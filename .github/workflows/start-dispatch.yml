@@ -13,10 +13,11 @@ jobs:
 
     steps:
     - name: Step 1
+      shell: pwsh
       run: |
-        echo "Attempting to create directory"
-        mkdir .\testing
-        mkdir .\testing
+        Write-Output "Attempting to create directory"
+        New-Item -Path ./testing -ItemType Directory
+        New-Item -Path ./testing -ItemType Directory
 
   job2:
     needs: [job1]
@@ -32,7 +33,7 @@ jobs:
 
   create-issue-on-failure:
     if: ${{ github.event_name == 'push' && failure() }}
-    needs: [job1, job2]
+    needs: [job2]
     runs-on: ubuntu-latest
 
     steps:
