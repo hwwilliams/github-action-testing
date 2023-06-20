@@ -38,7 +38,7 @@ jobs:
 
     steps:
     - name: Show GitHub Context
-      run: echo "${{ github }}"
+      run: echo "${{ github.ref }}"
 
     - name: Call Failed Workflow Issue Creation Workflow
       uses: benc-uk/workflow-dispatch@v1
