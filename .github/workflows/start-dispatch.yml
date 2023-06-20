@@ -37,6 +37,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Show GitHub Context
+      run: echo "${{ github }}"
+
     - name: Call Failed Workflow Issue Creation Workflow
       uses: benc-uk/workflow-dispatch@v1
       with:
