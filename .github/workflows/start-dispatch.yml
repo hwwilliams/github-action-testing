@@ -37,6 +37,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Echo Ref Name
+      run: echo "${{ github.ref_name }}"
+
     - name: Call Failed Workflow Issue Creation Workflow
       uses: benc-uk/workflow-dispatch@v1
       with:
